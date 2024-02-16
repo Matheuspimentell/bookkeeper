@@ -11,11 +11,43 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  username   String
-  email      String   @unique
-  password   String
-  salt       String
-  created_at DateTime @default(now())
+  id       String     @id @default(uuid())
+  username String
+  email    String     @unique
+  password String
+  salt     String
+  lists    BookList[]
+}
+
+model Book {
+  isbn            String   @id
+  title           String
+  authors         String[]
+  publisher       String
+  publicationYear Int      @map("pub_year")
+  genres          String[]
+}
+
+model BookList {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  listTitle   String
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+
+  owner       User        @relation(fields: [userId], references: [id])
+  listEntries ListEntry[]
+}
+
+model ListEntry {
+  id         Int      @id @default(autoincrement())
+  score      Int?
+  review     String?
+  bookIsbn   String
+  bookListId Int
   updated_at DateTime @default(now())
+  created_at DateTime @default(now())
+
+  list BookList @relation(fields: [bookListId], references: [id])
 }
