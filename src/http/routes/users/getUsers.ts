@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify'
-import { prisma } from '../../lib/prisma'
+import { prisma } from '../../../lib/prisma'
 
 // TODO: Make the /users route only available to users that have already authenticated (use JWT)
 export async function getUsers(app: FastifyInstance) {
