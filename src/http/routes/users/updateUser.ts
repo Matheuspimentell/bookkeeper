@@ -10,6 +10,8 @@ export async function updateUser(app: FastifyInstance) {
     const currentUserParams = z.object({
       id: z.string().uuid()
     })
+
+    const { id } = currentUserParams.parse(request.params)
     
     const updateUserParams = z.object({
       username: z.optional(z.string().min(6)),
@@ -18,7 +20,6 @@ export async function updateUser(app: FastifyInstance) {
     })
 
     const { username, email, password } = updateUserParams.parse(request.body)
-    const { id } = currentUserParams.parse(request.params)
     
     let salt: string | undefined
     let hash: string | undefined
@@ -40,9 +41,12 @@ export async function updateUser(app: FastifyInstance) {
     })
   
     if (!user) {
-      return reply.status(500).send({ message: 'User doesn\'t exist yet.' })
+      return reply.status(500).send({ message: 'Couldn\'t update user information.' })
     }
 
-    return reply.send({ message: 'User updated successfully.' })
+    return reply.send({ user: {
+      username: user.username,
+      email: user.email
+    }})
   })
 }

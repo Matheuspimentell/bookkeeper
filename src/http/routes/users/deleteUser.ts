@@ -17,7 +17,7 @@ export async function deleteUser(app: FastifyInstance) {
     })
 
     if (!user) {
-      return reply.status(400).send({ message: 'User not found.' })
+      return reply.status(500).send({ message: 'Couldn\'t delete user information.' })
     }
 
     return reply.send({ message: 'User deleted successfully.' })

@@ -20,7 +20,7 @@ export async function findUser(app: FastifyInstance) {
     })
 
     if (!user) {
-      return reply.status(400).send({ message: 'User not found.' })
+      return reply.status(404).send({ message: 'User not found.' })
     }
 
     return reply.send(user)

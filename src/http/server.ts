@@ -1,4 +1,4 @@
-import fastify from "fastify";
+import fastify from 'fastify'
 import { getUsers } from './routes/users/getUsers'
 import { findUser } from './routes/users/findUser'
 import { createUser } from './routes/users/createUser'
