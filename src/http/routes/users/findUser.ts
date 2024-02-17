@@ -3,16 +3,16 @@ import { prisma } from '../../../lib/prisma'
 import z from 'zod'
 
 export async function findUser(app: FastifyInstance) {
-  app.get('/users/:id', async (request, reply) => {
+  app.get('/users/:username', async (request, reply) => {
     const findUserParams = z.object({
-      id: z.string().uuid()
+      username: z.string().uuid()
     })
 
-    const { id } = findUserParams.parse(request.params)
+    const { username } = findUserParams.parse(request.params)
     
     const user = await prisma.user.findUnique({
       where: {
-        id: id,
+        username: username,
       },
       include: {
         lists: true
