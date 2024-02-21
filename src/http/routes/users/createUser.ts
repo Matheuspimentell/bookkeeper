@@ -7,13 +7,13 @@ const SALT_ROUNDS = 10
 
 export async function createUser(app: FastifyInstance) {
   app.post('/users', async (request, reply) => {
-    const createUserParams = z.object({
+    const userParams = z.object({
       username: z.string().min(6),
       email: z.string().email().min(5),
       password: z.string().min(6),
     })
 
-    const { username, email, password } = createUserParams.parse(request.body)
+    const { username, email, password } = userParams.parse(request.body)
 
     const salt = await bcrypt.genSalt(SALT_ROUNDS)
     const hash = await bcrypt.hash(password, salt)
@@ -27,7 +27,7 @@ export async function createUser(app: FastifyInstance) {
       }
     })
 
-    if (!user) {
+    if(!user) {
       return reply.status(500).send({ message: "Couldn\'t create user." })
     }
 

@@ -4,11 +4,11 @@ import z from 'zod'
 
 export async function findUser(app: FastifyInstance) {
   app.get('/users/:username', async (request, reply) => {
-    const findUserParams = z.object({
+    const userInformation = z.object({
       username: z.string().uuid()
     })
 
-    const { username } = findUserParams.parse(request.params)
+    const { username } = userInformation.parse(request.params)
     
     const user = await prisma.user.findUnique({
       where: {
@@ -19,7 +19,7 @@ export async function findUser(app: FastifyInstance) {
       }
     })
 
-    if (!user) {
+    if(!user) {
       return reply.status(404).send({ message: 'User not found.' })
     }
 

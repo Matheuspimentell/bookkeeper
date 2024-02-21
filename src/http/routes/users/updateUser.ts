@@ -7,23 +7,23 @@ const SALT_ROUNDS = 10
 
 export async function updateUser(app: FastifyInstance) {
   app.patch('/users/:id', async (request, reply) => {
-    const currentUserParams = z.object({
+    const currentUserInformation = z.object({
       id: z.string().uuid()
     })
 
-    const { id } = currentUserParams.parse(request.params)
+    const { id } = currentUserInformation.parse(request.params)
     
-    const updateUserParams = z.object({
+    const userParams = z.object({
       username: z.optional(z.string().min(6)),
       email: z.optional(z.string().email().min(5)),
       password: z.optional(z.string().min(6)),
     })
 
-    const { username, email, password } = updateUserParams.parse(request.body)
+    const { username, email, password } = userParams.parse(request.body)
     
     let salt: string | undefined
     let hash: string | undefined
-    if (password) {
+    if(password) {
       salt = await bcrypt.genSalt(SALT_ROUNDS)
       hash = await bcrypt.hash(password, salt)
     }
@@ -40,7 +40,7 @@ export async function updateUser(app: FastifyInstance) {
       }
     })
   
-    if (!user) {
+    if(!user) {
       return reply.status(500).send({ message: 'Couldn\'t update user information.' })
     }
 
