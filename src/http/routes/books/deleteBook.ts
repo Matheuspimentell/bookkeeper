@@ -17,9 +17,9 @@ export async function deleteBook(app: FastifyInstance) {
     })
 
     if(!book) {
-      return reply.status(500).send({ message: 'Couldn\'t delete book information.' })
+      return reply.status(404).send({ message: 'Couldn\'t delete book information.' })
     }
 
-    return reply.send({ message: 'Book information deleted successfully.' })
+    return reply.status(204).send()
   })
 }
