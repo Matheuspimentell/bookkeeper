@@ -2,8 +2,16 @@ import { FastifyInstance } from 'fastify'
 import { prisma } from '../../../../lib/prisma'
 import { z } from 'zod'
 
+const opts = {
+  schema: {
+    params: {
+      id: { type: 'integer' }
+    }
+  }
+}
+
 export async function findBookList(app: FastifyInstance) {
-  app.get('/users/:username/book-lists/:id', async (request, reply) => {
+  app.get('/users/:username/book-lists/:id', opts, async (request, reply) => {
     const booklistParams = z.object({
       id: z.number().int()
     })
@@ -15,7 +23,7 @@ export async function findBookList(app: FastifyInstance) {
     const { id } = booklistParams.parse(request.params)
     const { username } = userParams.parse(request.params)
 
-    const booklist = await prisma.bookList.findUnique({
+    const bookList = await prisma.bookList.findUnique({
       where: {
         id,
         owner: {
@@ -27,13 +35,14 @@ export async function findBookList(app: FastifyInstance) {
       }
     })
 
-    if(!booklist) {
+    if(!bookList) {
       return reply.status(500).send({ message: 'Couldn\'t find the specified book list.' })
     }
 
     return reply.send({
-      title: booklist.title,
-      entries: booklist.listEntries
+      title: bookList.title,
+      description: bookList.description,
+      entries: bookList.listEntries
     })
   })
 }

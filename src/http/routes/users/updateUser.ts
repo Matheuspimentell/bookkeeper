@@ -38,11 +38,9 @@ export async function updateUser(app: FastifyInstance) {
       where: {
         id
       }
-    })
-  
-    if(!user) {
+    }).catch(e => {
       return reply.status(500).send({ message: 'Couldn\'t update user information.' })
-    }
+    })
 
     return reply.send({ user: {
       username: user.username,

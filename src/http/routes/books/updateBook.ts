@@ -33,11 +33,9 @@ export async function updateBook(app: FastifyInstance) {
       where: {
         isbn
       }
-    })
-
-    if(!book) {
+    }).catch(e => {
       return reply.status(500).send({ message: 'Couldn\'t update book information.' })
-    }
+    })
 
     return reply.send({ book })
   })
