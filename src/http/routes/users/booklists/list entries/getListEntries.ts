@@ -6,35 +6,49 @@ const opts = {
   schema: {
     params: {
       username: { type: 'string' },
-      book_list_id: { type: 'integer' },
+      list_id: { type: 'integer' },
+      entry_id: { type: 'integer' }
     }
   }
 }
 
 
 export async function getListEntries(app: FastifyInstance) {
-  app.get('/users/:username/book-lists/:book_list_id/list-entries', opts, 
+  app.get('/users/:username/book-lists/:list_id/list-entries/:entry_id?', opts, 
   async (request, reply) => {
     const bookListInformation = z.object({
       username: z.string().min(6),
-      book_list_id: z.number().int(),
+      list_id: z.number().int(),
+      entry_id: z.optional(z.number().int())
     })
 
-    const { username, book_list_id } = bookListInformation.parse(request.params)
+    const { username, list_id, entry_id } = bookListInformation.parse(request.params)
 
-    const listEntries = await prisma.listEntry.findMany({
+    if(!entry_id) {
+      const listEntries = await prisma.listEntry.findMany({
+        where: {
+          bookListId: list_id
+        }
+      })
+  
+      return reply.send({
+        book_list_id: list_id,
+        list_entries: listEntries
+      })
+    }
+
+    const listEntry = await prisma.listEntry.findUnique({
       where: {
-        bookListId: book_list_id
+        id: entry_id,
+        AND: {
+          bookListId: list_id
+        }
       }
     })
 
-    if(!listEntries) {
-      return reply.status(500).send({ message: 'Couldn\'t get list entries information.' })
-    }
-
     return reply.send({
-      book_list_id: book_list_id,
-      list_entries: listEntries
+      book_list_id: list_id,
+      list_entry: listEntry
     })
   })
 }
