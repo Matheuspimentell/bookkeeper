@@ -3,8 +3,6 @@ import { prisma } from '../../../lib/prisma'
 import { z } from 'zod'
 import bcrypt from 'bcrypt'
 
-const SALT_ROUNDS = 10
-
 export async function createUser(app: FastifyInstance) {
   app.post('/users', async (request, reply) => {
     const userParams = z.object({
@@ -15,15 +13,13 @@ export async function createUser(app: FastifyInstance) {
 
     const { username, email, password } = userParams.parse(request.body)
 
-    const salt = await bcrypt.genSalt(SALT_ROUNDS)
-    const hash = await bcrypt.hash(password, salt)
+    const hash = await bcrypt.hash(password, 10)
 
     const user = await prisma.user.create({
       data: {
         username,
         email,
         password: hash,
-        salt
       }
     })
 

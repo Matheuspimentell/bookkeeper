@@ -3,8 +3,6 @@ import { prisma } from '../../../lib/prisma'
 import { z } from 'zod'
 import bcrypt from 'bcrypt'
 
-const SALT_ROUNDS = 10
-
 export async function updateUser(app: FastifyInstance) {
   app.patch('/users/:id', async (request, reply) => {
     const currentUserInformation = z.object({
@@ -21,11 +19,9 @@ export async function updateUser(app: FastifyInstance) {
 
     const { username, email, password } = userParams.parse(request.body)
     
-    let salt: string | undefined
     let hash: string | undefined
     if(password) {
-      salt = await bcrypt.genSalt(SALT_ROUNDS)
-      hash = await bcrypt.hash(password, salt)
+      hash = await bcrypt.hash(password, 10)
     }
 
     const user = await prisma.user.update({
@@ -33,7 +29,6 @@ export async function updateUser(app: FastifyInstance) {
         username,
         email,
         password: hash,
-        salt
       },
       where: {
         id

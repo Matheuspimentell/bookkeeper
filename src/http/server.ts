@@ -15,6 +15,7 @@ import { createListEntry } from './routes/users/booklists/list entries/createLis
 import { deleteListEntry } from './routes/users/booklists/list entries/deleteListEntry'
 import { getListEntries } from './routes/users/booklists/list entries/getListEntries'
 import { updateListEntry } from './routes/users/booklists/list entries/updateListEntry'
+import { login } from './routes/users/login'
 
 const app = fastify()
 
@@ -23,6 +24,7 @@ app.register(getUsers)         // * GET     /users/:username?
 app.register(createUser)       // * POST    /users
 app.register(updateUser)       // * PATCH   /users/:username
 app.register(deleteUser)       // * DELETE  /users/:username
+app.register(login)            // * POST    /users/login
 app.register(getBooks)         // * GET     /books/:isbn?
 app.register(createBook)       // * POST    /books
 app.register(updateBook)       // * PATCH   /books/:isbn
