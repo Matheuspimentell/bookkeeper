@@ -2,7 +2,6 @@ import { FastifyInstance } from 'fastify'
 import { prisma } from '../../../lib/prisma'
 import { z } from 'zod'
 
-// TODO: Make the /users route only available to users that have already authenticated (use JWT)
 export async function getUsers(app: FastifyInstance) {
   app.get('/users/:username?', async (request, reply) => {
     const userInformation = z.object({
