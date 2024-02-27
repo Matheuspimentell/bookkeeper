@@ -1,9 +1,15 @@
 import { FastifyInstance } from 'fastify'
 import { prisma } from '../../../lib/prisma'
 import { z } from 'zod'
+import authenticate from '../../../lib/authenticateJwt'
 
 export async function getUsers(app: FastifyInstance) {
   app.get('/users/:username?', async (request, reply) => {
+    const requestUser = await authenticate(request)
+    if(!requestUser) {
+      return reply.status(401).send({ message: 'Unauthorized request. Please log in first.' })
+    }
+
     const userInformation = z.object({
       username: z.optional(z.string().min(6))
     })

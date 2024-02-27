@@ -2,8 +2,7 @@ import { FastifyInstance } from 'fastify'
 import { prisma } from '../../../lib/prisma'
 import { z } from 'zod'
 import bcrypt from 'bcrypt'
-import * as jose from 'jose'
-import { env } from 'process'
+import sign from '../../../lib/signJwt'
 
 export async function login(app: FastifyInstance) {
   app.post('/users/login', async (request, reply) => {
@@ -27,22 +26,14 @@ export async function login(app: FastifyInstance) {
     const isPasswordValid = await bcrypt.compare(password, user.password)
 
     if(!isPasswordValid) {
-      return reply.status(400).send({ message: 'Invalid username or password' })
-    }
-    
-    const encodedSecretKey = new TextEncoder().encode(
-      process.env.SECRET_KEY && process.env.SECRET_KEY
-    )
-    
-    if(!encodedSecretKey) {
-      return reply.status(500).send({ message: 'No secret key found.' })
+      return reply.status(400).send({ message: 'Invalid username or password.' })
     }
 
-    const jwt = await new jose.SignJWT({
+    const jwt = await sign({
       id: user.id,
-      email: user.email,
-      username: user.username 
-    }).setProtectedHeader({ alg: "HS256" }).sign(encodedSecretKey)
+      username: user.username,
+      email: user.email
+    })
 
     return reply.send({ token: jwt })
   })
