@@ -2,7 +2,8 @@ import { FastifyInstance } from 'fastify'
 import { prisma } from '../../../lib/prisma'
 import { z } from 'zod'
 import bcrypt from 'bcrypt'
-import sign from '../../../lib/signJwt'
+import { signAccess, signRefresh } from '../../../utils/signJwt'
+import { redis } from '../../../lib/redis'
 
 export async function login(app: FastifyInstance) {
   app.post('/users/login', async (request, reply) => {
@@ -29,12 +30,22 @@ export async function login(app: FastifyInstance) {
       return reply.status(400).send({ message: 'Invalid username or password.' })
     }
 
-    const jwt = await sign({
+    const tokenData = {
       id: user.id,
       username: user.username,
       email: user.email
-    })
+    }
 
-    return reply.send({ token: jwt })
+    const accessToken = await signAccess(tokenData)
+    const refreshToken = await signRefresh(tokenData)
+
+    const tokens = await redis.sadd('refresh-tokens', refreshToken)
+
+    console.log(tokens)
+
+    return reply.send({ 
+      access_token: accessToken,
+      refresh_token: refreshToken
+    })
   })
 }

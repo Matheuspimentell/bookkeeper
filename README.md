@@ -17,4 +17,5 @@ the data model image can be found inside the ```imgs``` folder.
     <a href="https://nodejs.org/en" target="_blank"><img src="https://img.icons8.com/color/48/nodejs.png" alt="nodejs"/></a>
     <a href="https://www.prisma.io/" target="_blank"><img src="https://img.icons8.com/ios/50/prisma-orm.png" alt="prisma-orm"/></a>
     <a href="https://www.postgresql.org/" target="_blank"><img src="https://img.icons8.com/color/48/postgreesql.png" alt="postgreesql"/></a>
+    <a href="https://redis.io/" target="_blank"><img src="https://img.icons8.com/color/48/redis--v1.png" alt="redis--v1"/></a>
 </p>

@@ -1,9 +1,15 @@
 import { FastifyInstance } from 'fastify'
 import { prisma } from '../../../lib/prisma'
 import { z } from 'zod'
+import { authenticateAccess } from '../../../utils/authenticateJwt'
 
 export async function createBook(app: FastifyInstance) {
   app.post('/books', async (request, reply) => {
+    const requestUser = await authenticateAccess(request)
+    if(!requestUser) {
+      return reply.status(401).send({ message: 'Unauthorized request. Please log in first.' })
+    }
+
     const createBookParams = z.object({
       isbn: z.string().min(10),
       title: z.string().min(3),

@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { prisma } from '../../../../lib/prisma'
 import { z } from 'zod'
+import { authenticateAccess } from '../../../../utils/authenticateJwt'
 
 const opts = {
   schema: {
@@ -12,6 +13,11 @@ const opts = {
 
 export async function deleteBookList(app: FastifyInstance) {
   app.delete('/users/:username/book-lists/:id', opts, async (request, reply) => {
+    const requestUser = await authenticateAccess(request)
+    if(!requestUser) {
+      return reply.status(401).send({ message: 'Unauthorized request. Please log in first.' })
+    }
+
     const booklistParams = z.object({
       id: z.number().int()
     })

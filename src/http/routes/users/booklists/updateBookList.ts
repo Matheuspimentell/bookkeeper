@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { prisma } from '../../../../lib/prisma'
 import { z } from 'zod'
+import { authenticateAccess } from '../../../../utils/authenticateJwt'
 
 const opts = {
   schema: {
@@ -13,6 +14,11 @@ const opts = {
 
 export async function updateBookList(app: FastifyInstance) {
   app.patch('/users/:username/book-lists/:id', opts, async (request, reply) => {
+    const requestUser = await authenticateAccess(request)
+    if(!requestUser) {
+      return reply.status(401).send({ message: 'Unauthorized request. Please log in first.' })
+    }
+
     const bookListInformation = z.object({
       username: z.string().min(6),
       id: z.number().int()
@@ -24,6 +30,8 @@ export async function updateBookList(app: FastifyInstance) {
     })
     
     const { username, id } = bookListInformation.parse(request.params)
+    if(username !== requestUser.username) return reply.status(403).send()
+
     const { title, description } = booklistParams.parse(request.body)
     
     const bookList = await prisma.bookList.update({

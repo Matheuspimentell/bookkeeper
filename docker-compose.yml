@@ -10,7 +10,17 @@ services:
       - POSTGRES_PASSWORD=docker
       - POSTGRES_DB=users_auth
     volumes:
-      - users_auth_pg_data:/bitnami/postgresql
-    
+      - bookkeeper_pg_data:/bitnami/postgresql
+
+  redis:
+    image: bitnami/redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'bookkeeper_redis_data:/bitnami/redis/data'
+
 volumes:
-  users_auth_pg_data:
+  bookkeeper_pg_data:
+  bookkeeper_redis_data:

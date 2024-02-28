@@ -2,9 +2,15 @@ import { FastifyInstance } from 'fastify'
 import { prisma } from '../../../lib/prisma'
 import { z } from 'zod'
 import bcrypt from 'bcrypt'
+import { authenticateAccess } from '../../../utils/authenticateJwt'
 
 export async function updateUser(app: FastifyInstance) {
   app.patch('/users/:id', async (request, reply) => {
+    const requestUser = await authenticateAccess(request)
+    if(!requestUser) {
+      return reply.status(401).send({ message: 'Unauthorized request. Please log in first.' })
+    }
+
     const currentUserInformation = z.object({
       id: z.string().uuid()
     })

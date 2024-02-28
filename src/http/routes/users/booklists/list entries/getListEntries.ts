@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { prisma } from '../../../../../lib/prisma'
 import { z } from 'zod'
+import { authenticateAccess } from '../../../../../utils/authenticateJwt'
 
 const opts = {
   schema: {
@@ -16,6 +17,11 @@ const opts = {
 export async function getListEntries(app: FastifyInstance) {
   app.get('/users/:username/book-lists/:list_id/list-entries/:entry_id?', opts, 
   async (request, reply) => {
+    const requestUser = await authenticateAccess(request)
+    if(!requestUser) {
+      return reply.status(401).send({ message: 'Unauthorized request. Please log in first.' })
+    }
+
     const bookListInformation = z.object({
       username: z.string().min(6),
       list_id: z.number().int(),
@@ -23,6 +29,7 @@ export async function getListEntries(app: FastifyInstance) {
     })
 
     const { username, list_id, entry_id } = bookListInformation.parse(request.params)
+    if(username !== requestUser.username) return reply.status(403).send()
 
     if(!entry_id) {
       const listEntries = await prisma.listEntry.findMany({
